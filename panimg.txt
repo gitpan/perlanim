@@ -1,0 +1,59 @@
+Required: NetPBM, ImageMagick
+
+Usage: perl panimg.pl image.ext width height (preview) (multN)
+
+Script file is image_ext.scr
+
+Working dir is ./image_ext/
+
+preview = show original image with traces on, render every 25th frame.
+preview0 = just show trace
+
+preview is html page at ./image_ext/preview.htm
+
+multN = scale everything up by a factor of N - smooths pans, but takes up
+more resources
+
+Format of script file:
+
+(x1, y1, w1, h1) cmd dur (args)
+
+x1, y1 = coord of top left corner of rectangle to be sampled
+w1 = width
+h1 = height
+
+One of w1 and h1 can be set to '*' so that it's calculated at run time using
+the aspect ratio calculated from the width and height given on the command
+line.
+
+dur = duration in seconds.
+
+cmd is one of:
+
+line : args: (x2, y2, w2, h2, .... xN, yN, wN, hN)
+
+Arguments define points in the panning path.
+
+curve: args: same as line
+
+Same as line, but corners are smoothed out a little.
+
+pause: no args
+
+Pause on that position
+
+fade: args: (start, end)
+
+start = start brightness, 1 = completely on, 0 = completely off
+
+
+
+When script is run, TGA images are created of each frame, then joined together
+and the end by animmaker and tga2avi.sh.
+
+
+example:
+153,29,382,* curve 16 (153,380,382,*,1027,119,406,*)
+1027,119,406,* line 2 (70,0,1423,*)
+70,0,1423,* pause 6
+

@@ -1,0 +1,89 @@
+Required: NetPBM, Imagmagick
+
+
+Usage: perl genanim.pl root layer (startframe)
+
+root = directory stem
+
+Dir structure:
+
+root/src : source images
+root/scratch : temp dir
+root/layerN : subdir for each layer, layer 1 being bottom.
+root/layerN/frames : where frames are rendered
+root/layerN/masks : where alpha masks rendered
+root/movie : where end movie is rendered
+
+layer = which layer to render, or "movie" for whole movie (once layers have 
+been rendered.
+
+startframe = render from that frame onwards.
+
+Config files:
+
+root/config.cfg
+
+format:
+
+SIZE width height
+DURATION secs
+LAYERN (loop|static|once)
+
+LAYERN describes if the frames defined in that layer are used:
+
+loop: in a loop
+static: play all frames and stick on the last one
+once: play all frames once and then disappear.
+
+example:
+SIZE 352 288
+DURATION 480
+LAYER1 once
+LAYER2 once
+
+Can miss out layers, and also renumber layers just by renumbering the subdir
+and editing this cfg file.
+
+root/layerN/config.cfg
+
+DURATION secs
+ALIAS alias_name filname_or_mask
+e.g. ALIAS sun sun.png
+--when referring to "sun", use root/src/sun.png
+
+Wildcards allowed - order of sequence is an alphabetical sort of the matches.
+
+Line start_sec end_sec (x1,y1|opts) (x2,y2|opts) alias
+Curve start_sec end_sec (x1,y1|opts) (x2,y2|opts) alias
+
+If no opts, just (x,y)
+
+opts: defined characteristics, changes from one value to the other smoothly
+over the time allotted.
+
+br : brightness. -1 black, 0 normal, 1 white
+scx: scale x factor
+scy: scale y factor
+al: alpha setting, 1 opaque, 0 transparent - DON'T PILE ALPHAS IN THE SAME
+LAYER - USE SEPERATE LAYERS IF NEED BE. (Due to lazy coding)
+rot: rotation in degrees. +ve right, -ve left.
+
+Combinations are allowed: (x,y|al0|rot20)
+
+Paths can be defined - eg (x1,y1) (x2,y2) .... (xN,yN)
+
+
+FILTER: command pipeline
+
+Command pipeline which takes PPM image from STDIN and passes PPM image to STDOUT. Used
+to post-process every frame.
+
+Example:
+
+DURATION 432
+ALIAS hewson_png_pan hewson_png_frame*.tga
+Line 23.5 24.5 (0,0|al0) (0,0|al1) hewson_png_pan
+Line 24.5 31.5 (0,0) (0,0) hewson_png_pan
+Line 31.5 32.5 (0,0|al1) (0,0|al0) hewson_png_pan
+
+
